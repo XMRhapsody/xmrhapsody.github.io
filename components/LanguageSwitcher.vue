@@ -21,20 +21,25 @@
 export default {
   data() {
     return {
-      currentLanguage: 'zh'
+      currentLanguage: 'en'
     }
   },
   created() {
-    // 从本地存储读取语言设置，如果没有则默认为中文
-    const savedLang = localStorage.getItem('language') || 'zh'
-    this.currentLanguage = savedLang
-    this.$root.$emit('language-changed', savedLang)
+    // 只在客户端执行
+    if (process.client) {
+      // 从本地存储读取语言设置，如果没有则默认为英文
+      const savedLang = localStorage.getItem('language') || 'en'
+      this.currentLanguage = savedLang
+      this.$root.$emit('language-changed', savedLang)
+    }
   },
   methods: {
     switchLanguage(lang) {
       this.currentLanguage = lang
-      // 保存到本地存储
-      localStorage.setItem('language', lang)
+      // 保存到本地存储 (只在客户端执行)
+      if (process.client) {
+        localStorage.setItem('language', lang)
+      }
       // 发出语言改变事件，让其他组件可以监听和响应
       this.$root.$emit('language-changed', lang)
     }

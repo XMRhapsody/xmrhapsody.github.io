@@ -40,12 +40,15 @@ export default {
   },
   data() {
     return {
-      lang: 'zh'
+      lang: 'en'
     }
   },
   mounted() {
-    // 从本地存储中读取语言设置
-    this.lang = localStorage.getItem('language') || 'zh'
+    // 只在客户端执行
+    if (process.client) {
+      // 从本地存储中读取语言设置
+      this.lang = localStorage.getItem('language') || 'en'
+    }
     
     // 监听语言变化事件
     this.$root.$on('language-changed', (newLang) => {
@@ -105,19 +108,43 @@ html, body {
 .main-content {
   flex: 1;
   padding: 2rem 0;
+  background-color: #f6f8fa;
 }
 
 .content-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
+}
+
+/* 小屏幕，单列布局 */
+@media (max-width: 767px) {
+  .content-container {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "profile"
+      "repos"
+      "projects";
+  }
+  
+  .profile-section {
+    grid-area: profile;
+  }
+  
+  .repos-section {
+    grid-area: repos;
+  }
+  
+  .projects-section {
+    grid-area: projects;
+  }
 }
 
 /* 中等屏幕，两列布局 */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1199px) {
   .content-container {
     grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
@@ -135,15 +162,27 @@ html, body {
   
   .projects-section {
     grid-area: projects;
+    margin-top: 2rem;
   }
 }
 
-/* 大屏幕，三列布局 */
+/* 大屏幕，更均衡的三列布局 */
 @media (min-width: 1200px) {
   .content-container {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-areas:
-      "profile repos projects";
+    grid-template-columns: minmax(350px, 30%) minmax(350px, 30%) minmax(350px, 40%);
+    grid-template-areas: "profile repos projects";
+  }
+  
+  .profile-section {
+    grid-area: profile;
+  }
+  
+  .repos-section {
+    grid-area: repos;
+  }
+  
+  .projects-section {
+    grid-area: projects;
   }
 }
 

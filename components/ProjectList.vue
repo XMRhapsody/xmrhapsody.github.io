@@ -34,7 +34,7 @@
 export default {
   data() {
     return {
-      lang: 'zh',
+      lang: 'en',
       translations: {
         sectionTitle: {
           zh: '我的项目',
@@ -64,7 +64,7 @@ export default {
       projects: [
         {
           name: {
-            zh: "支持多人同时个人简历网站",
+            zh: "支持多人同时编辑个人简历网站",
             en: "Multi-user Resume Website"
           },
           status: {
@@ -96,8 +96,8 @@ export default {
         },
         {
           name: {
-            zh: "材质加载插件-RMCMaterialLoadingPlugin",
-            en: "Material Loading Plugin-RMCMaterialLoadingPlugin"
+            zh: "材质加载插件",
+            en: "RMCMaterialLoadingPlugin"
           },
           status: {
             zh: "已完成",
@@ -130,8 +130,11 @@ export default {
     }
   },
   mounted() {
-    // 从本地存储中读取语言设置
-    this.lang = localStorage.getItem('language') || 'zh'
+    // 只在客户端执行
+    if (process.client) {
+      // 从本地存储中读取语言设置
+      this.lang = localStorage.getItem('language') || 'en'
+    }
     
     // 监听语言变化事件
     this.$root.$on('language-changed', (newLang) => {
@@ -151,8 +154,9 @@ export default {
 <style scoped>
 .project-list {
   max-width: 100%;
-  margin: 2rem auto;
-  padding: 0 2rem;
+  margin: 0 auto;
+  padding: 1rem;
+  height: 100%;
 }
 
 .section-title {
@@ -167,14 +171,16 @@ export default {
 .projects-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 1rem;
+  max-height: none;
+  overflow-y: visible;
 }
 
 .project-card {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  padding: 1.25rem;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -191,16 +197,21 @@ export default {
 }
 
 .project-name {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
   color: #24292f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
 }
 
 .project-status {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
   border-radius: 10px;
+  flex-shrink: 0;
 }
 
 .status-completed {
@@ -223,6 +234,11 @@ export default {
   color: #57606a;
   margin-bottom: 1.5rem;
   line-height: 1.5;
+  min-height: 4.5em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .project-links {
@@ -244,6 +260,7 @@ export default {
 .project-link .icon {
   margin-right: 0.5rem;
   fill: currentColor;
+  flex-shrink: 0;
 }
 
 .demo-link {
@@ -264,7 +281,22 @@ export default {
   background-color: #0855a3;
 }
 
-@media (min-width: 480px) {
+/* 小屏幕使用单列布局 */
+@media (max-width: 479px) {
+  .projects-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 中等屏幕使用两列布局 */
+@media (min-width: 480px) and (max-width: 991px) {
+  .projects-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 大屏幕使用三列布局 */
+@media (min-width: 992px) {
   .projects-container {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
@@ -273,9 +305,18 @@ export default {
 @media (max-width: 768px) {
   .projects-container {
     grid-template-columns: 1fr;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
+@media (min-width: 1200px) {
+  .project-list {
+    height: 100%;
+  }
+}
+
+/* 小屏幕上项目卡片内部布局调整 */
 @media (max-width: 480px) {
   .project-header {
     flex-direction: column;

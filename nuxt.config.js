@@ -47,11 +47,19 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'https://api.github.com'
+    baseURL: 'https://api.github.com',
+    headers: {
+      common: {
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    }
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: [
+      'marked'
+    ]
   },
 
   // 生成静态页面时，为404页面提供支持

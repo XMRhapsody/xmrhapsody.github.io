@@ -12,10 +12,12 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
-    "nuxt": "^2.15.8",
     "@nuxtjs/axios": "^5.13.6",
+    "buffer": "^6.0.3",
     "core-js": "^3.19.3",
-    "buffer": "^6.0.3"
+    "entities": "^2.2.0",
+    "marked": "^4.3.0",
+    "nuxt": "^2.15.8"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^4.2.1",
@@ -27,4 +29,4 @@
   "overrides": {
     "postcss-nesting": "^8.0.1"
   }
-} 
+}

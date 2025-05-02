@@ -60,7 +60,7 @@
 export default {
   data() {
     return {
-      lang: 'zh',
+      lang: 'en',
       repos: [],
       loading: true,
       error: null,
@@ -102,8 +102,11 @@ export default {
     }
   },
   async mounted() {
-    // 从本地存储中读取语言设置
-    this.lang = localStorage.getItem('language') || 'zh'
+    // 只在客户端执行
+    if (process.client) {
+      // 从本地存储中读取语言设置
+      this.lang = localStorage.getItem('language') || 'en'
+    }
     
     // 监听语言变化事件
     this.$root.$on('language-changed', (newLang) => {
@@ -111,18 +114,66 @@ export default {
     })
     
     try {
+      // 首先尝试从缓存中获取数据
+      if (process.client) {
+        try {
+          const cachedRepos = JSON.parse(localStorage.getItem('github_repos'));
+          if (cachedRepos && cachedRepos.data && cachedRepos.timestamp) {
+            const cacheAge = Date.now() - cachedRepos.timestamp;
+            // 缓存如果不超过1小时则使用缓存数据
+            if (cacheAge < 3600000) {
+              console.log('使用缓存的仓库数据');
+              this.repos = cachedRepos.data;
+              this.loading = false;
+              return;
+            }
+          }
+        } catch (cacheErr) {
+          console.warn('读取缓存仓库数据失败:', cacheErr);
+        }
+      }
+      
+      // 获取GitHub仓库数据
       const response = await this.$axios.get('/users/XMRhapsody/repos', {
         params: {
           sort: 'updated',
           per_page: 6
         }
-      })
-      this.repos = response.data
-      this.loading = false
+      });
+      
+      this.repos = response.data;
+      this.loading = false;
+      
+      // 将数据缓存到本地存储
+      if (process.client) {
+        try {
+          localStorage.setItem('github_repos', JSON.stringify({
+            data: this.repos,
+            timestamp: Date.now()
+          }));
+        } catch (storageErr) {
+          console.warn('缓存仓库数据到本地存储失败:', storageErr);
+        }
+      }
     } catch (err) {
-      this.error = this.lang === 'zh' ? '无法加载仓库数据' : 'Failed to load repository data'
-      this.loading = false
-      console.error('GitHub API 错误:', err)
+      // 尝试使用可能存在的较旧缓存数据
+      if (process.client) {
+        try {
+          const cachedRepos = JSON.parse(localStorage.getItem('github_repos'));
+          if (cachedRepos && cachedRepos.data) {
+            console.log('使用较旧的缓存仓库数据');
+            this.repos = cachedRepos.data;
+            this.loading = false;
+            return;
+          }
+        } catch (cacheErr) {
+          console.warn('读取缓存仓库数据失败:', cacheErr);
+        }
+      }
+      
+      this.error = this.lang === 'zh' ? '无法加载仓库数据' : 'Failed to load repository data';
+      this.loading = false;
+      console.error('GitHub API 错误:', err);
     }
   },
   methods: {
@@ -145,8 +196,9 @@ export default {
 <style scoped>
 .repo-list {
   max-width: 100%;
-  margin: 2rem auto;
-  padding: 0 2rem;
+  margin: 0 auto;
+  padding: 1rem;
+  height: 100%;
 }
 
 .section-title {
@@ -172,20 +224,16 @@ export default {
 .repos-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-@media (min-width: 480px) {
-  .repos-container {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
+  gap: 1rem;
+  max-height: none;
+  overflow-y: visible;
 }
 
 .repo-card {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  padding: 1.25rem;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -201,9 +249,12 @@ export default {
 }
 
 .repo-name {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .repo-name a {
@@ -222,6 +273,7 @@ export default {
   padding: 0.25rem 0.5rem;
   border-radius: 10px;
   margin-left: 0.75rem;
+  flex-shrink: 0;
 }
 
 .repo-description {
@@ -233,6 +285,7 @@ export default {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 3em;
 }
 
 .repo-stats {
@@ -256,11 +309,13 @@ export default {
   height: 12px;
   border-radius: 50%;
   margin-right: 0.35rem;
+  flex-shrink: 0;
 }
 
 .repo-stars .icon, .repo-forks .icon {
   margin-right: 0.35rem;
   fill: currentColor;
+  flex-shrink: 0;
 }
 
 .repo-updated-at {
@@ -270,9 +325,30 @@ export default {
   width: 100%;
 }
 
-@media (max-width: 768px) {
+/* 小屏幕使用单列布局 */
+@media (max-width: 479px) {
   .repos-container {
     grid-template-columns: 1fr;
+  }
+}
+
+/* 中等屏幕使用两列布局 */
+@media (min-width: 480px) and (max-width: 991px) {
+  .repos-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 大屏幕使用灵活布局 */
+@media (min-width: 992px) {
+  .repos-container {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .repo-list {
+    height: 100%;
   }
 }
 </style> 

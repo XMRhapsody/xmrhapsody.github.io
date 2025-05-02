@@ -2,9 +2,9 @@
   <div class="error-page">
     <div class="error-container">
       <h1 class="error-code">404</h1>
-      <h2 class="error-title">页面未找到</h2>
-      <p class="error-text">您访问的页面不存在或已被移动。</p>
-      <nuxt-link to="/" class="back-button">返回首页</nuxt-link>
+      <h2 class="error-title">{{ lang === 'zh' ? '页面未找到' : 'Page Not Found' }}</h2>
+      <p class="error-text">{{ lang === 'zh' ? '您访问的页面不存在或已被移动。' : 'The page you are looking for does not exist or has been moved.' }}</p>
+      <nuxt-link to="/" class="back-button">{{ lang === 'zh' ? '返回首页' : 'Back to Home' }}</nuxt-link>
     </div>
   </div>
 </template>
@@ -12,7 +12,24 @@
 <script>
 export default {
   name: 'NotFoundPage',
-  layout: 'default'
+  layout: 'default',
+  data() {
+    return {
+      lang: 'en'
+    }
+  },
+  mounted() {
+    // 只在客户端执行
+    if (process.client) {
+      // 从本地存储中读取语言设置
+      this.lang = localStorage.getItem('language') || 'en'
+    }
+    
+    // 监听语言变化事件
+    this.$root.$on('language-changed', (newLang) => {
+      this.lang = newLang
+    })
+  }
 }
 </script>
 
