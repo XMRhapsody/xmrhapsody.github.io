@@ -2,6 +2,12 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
+  // GitHub Pages部署时的基础路径
+  // 如果部署在根域名下，可以注释掉这行
+  // router: {
+  //   base: '/xmrhapsody.github.io/'
+  // },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'XMRhapsody - About Me',
@@ -47,5 +53,10 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  // 生成静态页面时，为404页面提供支持
+  generate: {
+    fallback: true
   }
 } 
