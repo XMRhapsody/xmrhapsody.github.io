@@ -10,7 +10,7 @@
     </main>
     
     <footer class="footer">
-      <p>&copy; {{ new Date().getFullYear() }} XMRhapsody. 使用 <a href="https://github.com/nuxt/nuxt.js" target="_blank">Nuxt.js</a> 构建</p>
+      <p>&copy; {{ new Date().getFullYear() }} XMRhapsody.</p>
     </footer>
   </div>
 </template>
@@ -26,7 +26,7 @@ export default {
   },
   head() {
     return {
-      title: 'XMRhapsody - 关于我'
+      title: 'XMRhapsody的个人简介'
     }
   }
 }
