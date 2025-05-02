@@ -4,7 +4,7 @@
       <h1 class="error-code">404</h1>
       <h2 class="error-title">页面未找到</h2>
       <p class="error-text">您访问的页面不存在或已被移动。</p>
-      <nuxt-link to="/about" class="back-button">返回首页</nuxt-link>
+      <nuxt-link to="/" class="back-button">返回首页</nuxt-link>
     </div>
   </div>
 </template>
