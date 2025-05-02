@@ -1,9 +1,9 @@
 <template>
   <div class="repo-list">
-    <h2 class="section-title">仓库列表</h2>
+    <h2 class="section-title">{{ translations.sectionTitle[lang] }}</h2>
     
     <div v-if="loading" class="loading">
-      <p>加载中...</p>
+      <p>{{ translations.loading[lang] }}</p>
     </div>
     
     <div v-else-if="error" class="error">
@@ -12,7 +12,7 @@
     
     <div v-else>
       <div v-if="repos.length === 0" class="no-repos">
-        <p>没有可显示的仓库</p>
+        <p>{{ translations.noRepos[lang] }}</p>
       </div>
       
       <div v-else class="repos-container">
@@ -47,7 +47,7 @@
             </div>
             
             <div class="repo-updated-at">
-              更新于 {{ formatDate(repo.updated_at) }}
+              {{ translations.updatedAt[lang] }} {{ formatDate(repo.updated_at) }}
             </div>
           </div>
         </div>
@@ -60,9 +60,28 @@
 export default {
   data() {
     return {
+      lang: 'zh',
       repos: [],
       loading: true,
       error: null,
+      translations: {
+        sectionTitle: {
+          zh: "仓库列表",
+          en: "Repository List"
+        },
+        loading: {
+          zh: "加载中...",
+          en: "Loading..."
+        },
+        noRepos: {
+          zh: "没有可显示的仓库",
+          en: "No repositories to display"
+        },
+        updatedAt: {
+          zh: "更新于",
+          en: "Updated on"
+        }
+      },
       languageColors: {
         "JavaScript": "#f1e05a",
         "TypeScript": "#2b7489",
@@ -83,6 +102,14 @@ export default {
     }
   },
   async mounted() {
+    // 从本地存储中读取语言设置
+    this.lang = localStorage.getItem('language') || 'zh'
+    
+    // 监听语言变化事件
+    this.$root.$on('language-changed', (newLang) => {
+      this.lang = newLang
+    })
+    
     try {
       const response = await this.$axios.get('/users/XMRhapsody/repos', {
         params: {
@@ -93,7 +120,7 @@ export default {
       this.repos = response.data
       this.loading = false
     } catch (err) {
-      this.error = '无法加载仓库数据'
+      this.error = this.lang === 'zh' ? '无法加载仓库数据' : 'Failed to load repository data'
       this.loading = false
       console.error('GitHub API 错误:', err)
     }
@@ -101,7 +128,8 @@ export default {
   methods: {
     formatDate(dateString) {
       const date = new Date(dateString)
-      return date.toLocaleDateString('zh-CN', {
+      const locale = this.lang === 'zh' ? 'zh-CN' : 'en-US'
+      return date.toLocaleDateString(locale, {
         year: 'numeric',
         month: 'short',
         day: 'numeric'

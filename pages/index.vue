@@ -1,7 +1,8 @@
 <template>
   <div class="about-page">
     <header class="header">
-      <h1 class="site-title">关于我</h1>
+      <h1 class="site-title">{{ lang === 'zh' ? '关于我' : 'About Me' }}</h1>
+      <language-switcher class="language-switcher" />
     </header>
     
     <main class="main-content">
@@ -28,16 +29,32 @@
 import GithubProfile from '~/components/GithubProfile.vue'
 import RepoList from '~/components/RepoList.vue'
 import ProjectList from '~/components/ProjectList.vue'
+import LanguageSwitcher from '~/components/LanguageSwitcher.vue'
 
 export default {
   components: {
     GithubProfile,
     RepoList,
-    ProjectList
+    ProjectList,
+    LanguageSwitcher
+  },
+  data() {
+    return {
+      lang: 'zh'
+    }
+  },
+  mounted() {
+    // 从本地存储中读取语言设置
+    this.lang = localStorage.getItem('language') || 'zh'
+    
+    // 监听语言变化事件
+    this.$root.$on('language-changed', (newLang) => {
+      this.lang = newLang
+    })
   },
   head() {
     return {
-      title: 'XMRhapsody的个人简介'
+      title: this.lang === 'zh' ? 'XMRhapsody的个人简介' : 'XMRhapsody Profile'
     }
   }
 }
@@ -70,6 +87,13 @@ html, body {
   color: white;
   padding: 2rem 0;
   text-align: center;
+  position: relative;
+}
+
+.language-switcher {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .site-title {
@@ -138,5 +162,14 @@ html, body {
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .language-switcher {
+    position: static;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+  }
 }
 </style> 

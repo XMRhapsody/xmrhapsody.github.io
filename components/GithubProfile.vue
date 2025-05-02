@@ -1,7 +1,7 @@
 <template>
   <div class="github-profile">
     <div v-if="loading" class="loading">
-      <p>加载中...</p>
+      <p>{{ translations.loading[lang] }}</p>
     </div>
     <div v-else-if="error" class="error">
       <p>{{ error }}</p>
@@ -42,15 +42,15 @@
       <div class="profile-stats">
         <div class="stat-item">
           <span class="stat-count">{{ profile.public_repos }}</span>
-          <span class="stat-label">仓库</span>
+          <span class="stat-label">{{ translations.stats.repos[lang] }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-count">{{ profile.followers }}</span>
-          <span class="stat-label">粉丝</span>
+          <span class="stat-label">{{ translations.stats.followers[lang] }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-count">{{ profile.following }}</span>
-          <span class="stat-label">关注</span>
+          <span class="stat-label">{{ translations.stats.following[lang] }}</span>
         </div>
       </div>
     </div>
@@ -61,18 +61,47 @@
 export default {
   data() {
     return {
+      lang: 'zh',
       profile: null,
       loading: true,
-      error: null
+      error: null,
+      translations: {
+        loading: {
+          zh: "加载中...",
+          en: "Loading..."
+        },
+        stats: {
+          repos: {
+            zh: "仓库",
+            en: "Repos"
+          },
+          followers: {
+            zh: "粉丝",
+            en: "Followers"
+          },
+          following: {
+            zh: "关注",
+            en: "Following"
+          }
+        }
+      }
     }
   },
   async mounted() {
+    // 从本地存储中读取语言设置
+    this.lang = localStorage.getItem('language') || 'zh'
+    
+    // 监听语言变化事件
+    this.$root.$on('language-changed', (newLang) => {
+      this.lang = newLang
+    })
+    
     try {
       const response = await this.$axios.get('/users/XMRhapsody')
       this.profile = response.data
       this.loading = false
     } catch (err) {
-      this.error = '无法加载个人资料数据'
+      this.error = this.lang === 'zh' ? '无法加载个人资料数据' : 'Failed to load profile data'
       this.loading = false
       console.error('GitHub API 错误:', err)
     }
