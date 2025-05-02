@@ -5,8 +5,17 @@
     </header>
     
     <main class="main-content">
-      <github-profile />
-      <repo-list />
+      <div class="content-container">
+        <div class="profile-section">
+          <github-profile />
+        </div>
+        <div class="repos-section">
+          <repo-list />
+        </div>
+        <div class="projects-section">
+          <project-list />
+        </div>
+      </div>
     </main>
     
     <footer class="footer">
@@ -18,11 +27,13 @@
 <script>
 import GithubProfile from '~/components/GithubProfile.vue'
 import RepoList from '~/components/RepoList.vue'
+import ProjectList from '~/components/ProjectList.vue'
 
 export default {
   components: {
     GithubProfile,
-    RepoList
+    RepoList,
+    ProjectList
   },
   head() {
     return {
@@ -70,6 +81,46 @@ html, body {
 .main-content {
   flex: 1;
   padding: 2rem 0;
+}
+
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+/* 中等屏幕，两列布局 */
+@media (min-width: 768px) {
+  .content-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "profile repos"
+      "projects projects";
+  }
+  
+  .profile-section {
+    grid-area: profile;
+  }
+  
+  .repos-section {
+    grid-area: repos;
+  }
+  
+  .projects-section {
+    grid-area: projects;
+  }
+}
+
+/* 大屏幕，三列布局 */
+@media (min-width: 1200px) {
+  .content-container {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+      "profile repos projects";
+  }
 }
 
 .footer {

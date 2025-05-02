@@ -116,7 +116,7 @@ export default {
 
 <style scoped>
 .repo-list {
-  max-width: 800px;
+  max-width: 100%;
   margin: 2rem auto;
   padding: 0 2rem;
 }
@@ -143,8 +143,14 @@ export default {
 
 .repos-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.5rem;
+}
+
+@media (min-width: 480px) {
+  .repos-container {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
 }
 
 .repo-card {

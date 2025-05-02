@@ -88,7 +88,7 @@ export default {
 
 <style scoped>
 .github-profile {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2rem;
 }
