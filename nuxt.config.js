@@ -3,10 +3,9 @@ export default {
   target: 'static',
 
   // GitHub Pages部署时的基础路径
-  // 如果部署在根域名下，可以注释掉这行
-  // router: {
-  //   base: '/xmrhapsody.github.io/'
-  // },
+  router: {
+    base: '/'
+  },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
