@@ -16,6 +16,9 @@
         <div class="projects-section">
           <project-list />
         </div>
+        <div class="gallery-section">
+          <gallery-list />
+        </div>
       </div>
     </main>
     
@@ -29,6 +32,7 @@
 import GithubProfile from '~/components/GithubProfile.vue'
 import RepoList from '~/components/RepoList.vue'
 import ProjectList from '~/components/ProjectList.vue'
+import GalleryList from '~/components/GalleryList.vue'
 import LanguageSwitcher from '~/components/LanguageSwitcher.vue'
 
 export default {
@@ -36,6 +40,7 @@ export default {
     GithubProfile,
     RepoList,
     ProjectList,
+    GalleryList,
     LanguageSwitcher
   },
   data() {
@@ -127,7 +132,8 @@ html, body {
     grid-template-areas:
       "profile"
       "repos"
-      "projects";
+      "projects"
+      "gallery";
   }
   
   .profile-section {
@@ -140,6 +146,10 @@ html, body {
   
   .projects-section {
     grid-area: projects;
+  }
+  
+  .gallery-section {
+    grid-area: gallery;
   }
 }
 
@@ -149,7 +159,7 @@ html, body {
     grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
       "profile repos"
-      "projects projects";
+      "projects gallery";
   }
   
   .profile-section {
@@ -162,15 +172,18 @@ html, body {
   
   .projects-section {
     grid-area: projects;
-    margin-top: 2rem;
+  }
+  
+  .gallery-section {
+    grid-area: gallery;
   }
 }
 
-/* 大屏幕，更均衡的三列布局 */
+/* 大屏幕，四列布局 */
 @media (min-width: 1200px) {
   .content-container {
-    grid-template-columns: minmax(350px, 30%) minmax(350px, 30%) minmax(350px, 40%);
-    grid-template-areas: "profile repos projects";
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-areas: "profile repos projects gallery";
   }
   
   .profile-section {
@@ -183,6 +196,10 @@ html, body {
   
   .projects-section {
     grid-area: projects;
+  }
+  
+  .gallery-section {
+    grid-area: gallery;
   }
 }
 
